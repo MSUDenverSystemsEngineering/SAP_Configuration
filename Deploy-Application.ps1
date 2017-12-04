@@ -56,15 +56,15 @@ Try {
 	##* VARIABLE DECLARATION
 	##*===============================================
 	## Variables: Application
-	[string]$appVendor = ''
-	[string]$appName = ''
-	[string]$appVersion = ''
-	[string]$appArch = ''
+	[string]$appVendor = 'SAP GUI'
+	[string]$appName = 'Configuration'
+	[string]$appVersion = '7.40'
+	[string]$appArch = 'x86'
 	[string]$appLang = 'EN'
 	[string]$appRevision = '01'
 	[string]$appScriptVersion = '1.0.0'
-	[string]$appScriptDate = '06/12/2017'
-	[string]$appScriptAuthor = '<author name>'
+	[string]$appScriptDate = '12/04/2017'
+	[string]$appScriptAuthor = 'Truong Nguyen'
 	##*===============================================
 	## Variables: Install Titles (Only set here to override defaults set by the toolkit)
 	[string]$installName = ''
@@ -112,7 +112,7 @@ Try {
 		[string]$installPhase = 'Pre-Installation'
 
 		## Show Welcome Message, close applications if required, verify there is enough disk space to complete the install, and persist the prompt
-		Show-InstallationWelcome -CloseApps 'iexplore' -CheckDiskSpace -PersistPrompt
+		Show-InstallationWelcome -CloseApps 'saplogon' -CheckDiskSpace -PersistPrompt
 
 		## Show Progress Message (with the default message)
 		Show-InstallationProgress
@@ -132,7 +132,12 @@ Try {
 		}
 
 		## <Perform Installation tasks here>
-
+		Remove-File -Path "C:\Users\Public\Desktop\SAP Logon.lnk"
+		Remove-File -Path "C:\Users\Public\Desktop\NetWeaver Business Client 5.0.lnk"
+		Get-ChildItem -Path "${envSystemDrive}\Users" -Force | Where-Object{ $_.PSIsContainer } | ForEach-Object {
+			$SAPUserFolder = $_.FullName + "\AppData\Roaming\SAP\Common"
+			Copy-File -Path "$dirSupportFiles\Common\*.*" -Destination $SAPUserFolder
+		}
 
 		##*===============================================
 		##* POST-INSTALLATION
@@ -140,6 +145,7 @@ Try {
 		[string]$installPhase = 'Post-Installation'
 
 		## <Perform Post-Installation tasks here>
+
 
 		## Display a message at the end of the install
 		If (-not $useDefaultMsi) {Show-InstallationPrompt -Message "'$appVendor' '$appName' '$appVersion' has been Sucessfully Installed." -ButtonRightText ‘OK’ -Icon Information -NoWait}
@@ -152,7 +158,7 @@ Try {
 		[string]$installPhase = 'Pre-Uninstallation'
 
 		## Show Welcome Message, close applications with a 60 second countdown before automatically closing
-		Show-InstallationWelcome -CloseApps 'iexplore' -CloseAppsCountdown 60
+		Show-InstallationWelcome -CloseApps 'saplogon' -CloseAppsCountdown 60
 
 		## Show Progress Message (with the default message)
 		Show-InstallationProgress
@@ -173,15 +179,13 @@ Try {
 
 		# <Perform Uninstallation tasks here>
 
-
 		##*===============================================
 		##* POST-UNINSTALLATION
 		##*===============================================
 		[string]$installPhase = 'Post-Uninstallation'
 
 		## <Perform Post-Uninstallation tasks here>
-
-
+		
 	}
 
 	##*===============================================
